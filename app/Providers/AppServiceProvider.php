@@ -4,10 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\URL; // <-- Tambahkan import ini
 use App\Models\Reservasi;
 use App\StatusReservasi;
 use Illuminate\Pagination\Paginator;
-
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,7 +24,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // PAKSA HTTPS JIKA BERADA DI PRODUCTION (RAILWAY)
+        if (config('app.env') === 'production' || env('RAILWAY_ENVIRONMENT')) {
+            URL::forceScheme('https');
+        }
 
+        // Kode View::composer Anda yang sebelumnya...
         View::composer('*', function ($view) {
             if (!auth()->check()) {
                 return;
