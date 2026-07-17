@@ -12,14 +12,16 @@ class LantaiSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        $dataLantai = [];
         for ($i = 2; $i <= 4; $i++) {
-            $dataLantai[] = [
-                'nama_lantai' => 'Lantai ' . $i,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+            DB::table('lantai')->updateOrInsert(
+                [
+                    'nama_lantai' => 'Lantai ' . $i,
+                ],
+                [
+                    'updated_at' => $now,
+                    'created_at' => $now,
+                ]
+            );
         }
-        DB::table('lantai')->insert($dataLantai);
     }
 }
