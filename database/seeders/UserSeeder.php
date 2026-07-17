@@ -13,13 +13,17 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'nama' => 'AdminSira',
-            'nim' => '00000000',
-            'username' => 'superadmin',
-            'password' => Hash::make('password'),
-            'email' => 'admin@campus.ac.id',
-            'role' => 'admin',
-        ]);
+        User::updateOrCreate(
+    [
+        'nim' => '00000000',
+    ],
+    [
+        'nama' => 'AdminSira',
+        'username' => 'superadmin',
+        'password' => Hash::make('password'),
+        'email' => 'admin@campus.ac.id',
+        'role' => 'admin',
+    ]
+);
     }
 }
