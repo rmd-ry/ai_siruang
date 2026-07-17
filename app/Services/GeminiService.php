@@ -174,39 +174,78 @@ class GeminiService
     }
 
     protected function callGemini(string $prompt): ?string
-    {
-        try {
-            $response = Http::timeout(15)
-                ->withHeaders(['x-goog-api-key' => $this->apiKey])
-                ->post(
-                    "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent",
-                    [
-                        'contents' => [
-                            ['parts' => [['text' => $prompt]]],
-                        ],
-                        'generationConfig' => [
-                            'temperature' => 0.6,
-                            'maxOutputTokens' => 600,
-                        ],
-                    ]
-                );
+{
+    try {
+        Log::info('Gemini request', [
+            'has_key' => !empty($this->apiKey),
+            'key_prefix' => substr($this->apiKey ?? '', 0, 4),
+            'model' => $this->model,
+            'endpoint' => "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent",
+        ]);
 
-            if ($response->successful()) {
-                $text = data_get($response->json(), 'candidates.0.content.parts.0.text');
-                return $text ? trim($text) : null;
+        $response = Http::timeout(30)
+            ->withHeaders([
+                'x-goog-api-key' => $this->apiKey,
+                'Content-Type' => 'application/json',
+            ])
+            ->post(
+                "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent",
+                [
+                    'contents' => [
+                        [
+                            'parts' => [
+                                [
+                                    'text' => $prompt,
+                                ],
+                            ],
+                        ],
+                    ],
+                    'generationConfig' => [
+                        'temperature' => 0.6,
+                        'maxOutputTokens' => 600,
+                    ],
+                ]
+            );
+
+        Log::info('Gemini response', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        if ($response->successful()) {
+            $text = data_get($response->json(), 'candidates.0.content.parts.0.text');
+
+            if ($text) {
+                return trim($text);
             }
 
-            Log::warning('Gemini API gagal merespons.', [
-                'status' => $response->status(),
-                'body' => $response->body(),
+            Log::warning('Gemini berhasil tetapi text kosong.', [
+                'json' => $response->json(),
             ]);
 
             return null;
-        } catch (\Throwable $e) {
-            Log::error('Gemini API error: ' . $e->getMessage());
-            return null;
         }
+
+        Log::error('Gemini API gagal.', [
+            'status' => $response->status(),
+            'headers' => $response->headers(),
+            'body' => $response->body(),
+        ]);
+
+        return null;
+
+    } catch (\Throwable $e) {
+
+        Log::error('Gemini Exception', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return null;
     }
+}
 
     /**
      * Parse pesan bebas dari user (mis. "carikan ruangan kosong besok jam 2-4 siang
