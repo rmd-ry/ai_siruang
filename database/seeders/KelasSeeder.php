@@ -11,48 +11,57 @@ class KelasSeeder extends Seeder
     public function run(): void
     {
         $now = Carbon::now();
-        $dataKelas = [];
 
-        $dataKelas[] = [
-            'id_lantai' => 1,
-            'nama_kelas' => 'Lab Komputer',
-            'kapasitas' => 39,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ];
+        // Lab Komputer
+        DB::table('kelas')->updateOrInsert(
+            ['nama_kelas' => 'Lab Komputer'],
+            [
+                'id_lantai' => 1,
+                'kapasitas' => 39,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]
+        );
 
+        // Ruang 301-318
         for ($i = 1; $i <= 18; $i++) {
             $nomorRuangan = '3' . str_pad($i, 2, '0', STR_PAD_LEFT);
 
-            $dataKelas[] = [
-                'id_lantai' => 2,
-                'nama_kelas' => $nomorRuangan,
-                'kapasitas' => 40,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+            DB::table('kelas')->updateOrInsert(
+                ['nama_kelas' => $nomorRuangan],
+                [
+                    'id_lantai' => 2,
+                    'kapasitas' => 40,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
         }
 
+        // Ruang 401-408
         for ($i = 1; $i <= 8; $i++) {
             $nomorRuangan = '4' . str_pad($i, 2, '0', STR_PAD_LEFT);
 
-            $dataKelas[] = [
-                'id_lantai' => 3,
-                'nama_kelas' => $nomorRuangan,
-                'kapasitas' => 40,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+            DB::table('kelas')->updateOrInsert(
+                ['nama_kelas' => $nomorRuangan],
+                [
+                    'id_lantai' => 3,
+                    'kapasitas' => 40,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]
+            );
         }
 
-        $dataKelas[] = [
-            'id_lantai' => 3,
-            'nama_kelas' => 'Aula',
-            'kapasitas' => 30,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ];
-
-        DB::table('kelas')->insert($dataKelas);
+        // Aula
+        DB::table('kelas')->updateOrInsert(
+            ['nama_kelas' => 'Aula'],
+            [
+                'id_lantai' => 3,
+                'kapasitas' => 30,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]
+        );
     }
 }
